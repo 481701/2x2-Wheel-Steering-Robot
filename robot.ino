@@ -92,11 +92,6 @@ void loop() {
       
       while (!PS3.PS3Connected) { //zolang dat de controller niet verbonden is / de verbinding verloren is
         Usb.Task();
-
-        if(digitalRead(demo_knop) == LOW) {
-          Serial.println("Demo knop ingedrukt");
-          DemoShow();
-        }
     
         if (first) {
           Serial.println("Controller disconnected");
@@ -119,6 +114,11 @@ void loop() {
       if (ButtonStart) {
         PS3.disconnect();
       }
+      if(digitalRead(demo_knop) == LOW || buttonSelect) {
+        Serial.println("Demo knop ingedrukt");
+        DemoShow();
+      }
+
     getControllerValues();
     PowerControl(TriggerRight2, TriggerRight2);
   //printControllerValues();
@@ -235,7 +235,7 @@ void getControllerValues() {
   ButtonLeft3 = PS3.getButtonPress(L3);
   ButtonRight3 = PS3.getButtonPress(R3);
 
-  ButtonSelect = PS3.getButtonPress(SELECT);
+  ButtonSelect = PS3.getButtonClick(SELECT);
   ButtonStart = PS3.getButtonClick(START);
   ButtonHome = PS3.getButtonPress(HOME);
 
