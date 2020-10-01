@@ -8,10 +8,10 @@ BTD Btd(&Usb); //aanmaken bluetooth object
 PS3BT PS3(&Btd, 0x00, 0x15, 0x83, 0x3D, 0x0A, 0x57); //aanmaken PS3BT object met address
 
 //nog invullen
-#define step1dir 1
-#define step1step 1
-#define step2dir 1
-#define step2step 1
+#define step1dir 2
+#define step1step 2
+#define step2dir 2
+#define step2step 2
 
 #define angleRange 1
 #define stepsPerRev 200
