@@ -13,8 +13,8 @@ PS3BT PS3(&Btd, 0x00, 0x15, 0x83, 0x3D, 0x0A, 0x57); //aanmaken PS3BT object met
 #define step2dir 1
 #define step2step 1
 
-#define angleRange 1
-#define stepsPerRev 200
+float angleRange = 2;
+float stepsPerRev = 200;
 
 float currentAngle1 = 0;
 float currentAngle2 = 0;
@@ -157,49 +157,48 @@ void PowerControl(int esc1, int esc2) {
 }
 
 void SteeringControl(int step1ang, int step2ang) {
+void SteeringControl(int step1ang, int step2ang) {
 
-  if(step1ang>currentAngle1){
-    digitalWrite(step1dir, 1);
-  }
-  else{
-    digitalWrite(step1dir, 0);
-  }
+  while (currentAngle1 + angleRange < step1ang || step1ang < currentAngle1 - angleRange || currentAngle2 + angleRange < step2ang || step2ang < currentAngle2 - angleRange) {
 
-  if(step2ang>currentAngle2){
-    digitalWrite(step2dir, 1);
-  }
-  else{
-    digitalWrite(step2dir, 0);
-  }
-
-  while(currentAngle1 + angleRange < step1ang < currentAngle1 - angleRange && currentAngle2 + angleRange < step2ang < currentAngle2 - angleRange){
-
-    if(currentAngle1 + angleRange < step1ang < currentAngle1 - angleRange){
-    digitalWrite(step1step, 1);
-    delayMicroseconds(stepperDelay);
-    digitalWrite(step1step, 0);
-    delayMicroseconds(stepperDelay);
-
-      if (step1dir){
-        currentAngle1 += 360/stepsPerRev;
-      }
-      else{
-        currentAngle1 -= 360/stepsPerRev;
-      }
+    //stepper 1 rechtsom
+    if (currentAngle1 + angleRange < step1ang) {
+      digitalWrite(step1dir, 1);
+      digitalWrite(step1step, 1);
+      delayMicroseconds(stepperDelay);
+      digitalWrite(step1step, 0);
+      delayMicroseconds(stepperDelay);
+      currentAngle1 += 360 / stepsPerRev;
     }
 
-    if(currentAngle2 + angleRange < step2ang < currentAngle2 - angleRange){
-    digitalWrite(step2step, 1);
-    delayMicroseconds(stepperDelay);
-    digitalWrite(step2step, 0);
-    delayMicroseconds(stepperDelay);
+    //stepper 1 linksom
+    if (step1ang < currentAngle1 - angleRange) {
+      digitalWrite(step1dir, 0);
+      digitalWrite(step1step, 1);
+      delayMicroseconds(stepperDelay);
+      digitalWrite(step1step, 0);
+      delayMicroseconds(stepperDelay);
+      currentAngle1 -= 360 / stepsPerRev;
+    }
 
-      if (step2dir){
-        currentAngle2 += 360/stepsPerRev;
-      }
-      else{
-        currentAngle2 -= 360/stepsPerRev;
-      }
+    //stepper 2 rechtsom
+    if (currentAngle2 + angleRange < step2ang) {
+      digitalWrite(step2dir, 1);
+      digitalWrite(step2step, 1);
+      delayMicroseconds(stepperDelay);
+      digitalWrite(step2step, 0);
+      delayMicroseconds(stepperDelay);
+      currentAngle2 += 360 / stepsPerRev;
+    }
+
+    //stepper 2 linksom
+    if (step2ang < currentAngle2 - angleRange) {
+      digitalWrite(step2dir, 0);
+      digitalWrite(step2step, 1);
+      delayMicroseconds(stepperDelay);
+      digitalWrite(step2step, 0);
+      delayMicroseconds(stepperDelay);
+      currentAngle2 -= 360 / stepsPerRev;
     }
   }
 }
