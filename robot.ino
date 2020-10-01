@@ -7,6 +7,20 @@ BTD Btd(&Usb); //aanmaken bluetooth object
 //PS3BT PS3(&Btd); //aanmaken PS3BT object
 PS3BT PS3(&Btd, 0x00, 0x15, 0x83, 0x3D, 0x0A, 0x57); //aanmaken PS3BT object met address
 
+//nog invullen
+#define step1dir 1
+#define step1step 1
+#define step2dir 1
+#define step2step 1
+
+#define angleRange 1
+#define stepsPerRev 200
+
+float currentAngle1 = 0;
+float currentAngle2 = 0;
+
+int stepperDelay = 1000;
+
 void getControllerValues();
 void printControllerValues();
 void setLed(int nLed, bool val);
@@ -47,16 +61,27 @@ Servo Vesc1;
 Servo Vesc2;
 
 void setup() {
+
   Serial.begin(115200); //initializeren serial monitor
+
   pinMode(demo_knop, INPUT);
+  pinMode(step1dir, OUTPUT);
+  pinMode(step1step, OUTPUT);
+  pinMode(step2dir, OUTPUT);
+  pinMode(step2step, OUTPUT);
+
   if (Usb.Init() == -1) { //als de USB niet geinitializeerd is
     Serial.print("USB shield could not initualize, reset arduino");
     while (1); //code stoppen
   }
 
   Serial.println("USB shield initialized");
+
   Vesc1.attach(7); //Zijn PWM pinnen
   Vesc2.attach(8);
+
+
+
 }
 
 
@@ -67,11 +92,6 @@ void loop() {
       
       while (!PS3.PS3Connected) { //zolang dat de controller niet verbonden is / de verbinding verloren is
         Usb.Task();
-
-        if(digitalRead(demo_knop) == LOW) {
-          Serial.println("Demo knop ingedrukt");
-          DemoShow();
-        }
     
         if (first) {
           Serial.println("Controller disconnected");
@@ -94,6 +114,11 @@ void loop() {
       if (ButtonStart) {
         PS3.disconnect();
       }
+      if(digitalRead(demo_knop) == LOW || buttonSelect) {
+        Serial.println("Demo knop ingedrukt");
+        DemoShow();
+      }
+
     getControllerValues();
     PowerControl(TriggerRight2, TriggerRight2);
   //printControllerValues();
@@ -131,6 +156,54 @@ void PowerControl(int esc1, int esc2) {
   Vesc2.writeMicroseconds(map(esc2, 0, 255, 1000, 2000));
 }
 
+void SteeringControl(int step1ang, int step2ang) {
+
+  if(step1ang>currentAngle1){
+    digitalWrite(step1dir, 1);
+  }
+  else{
+    digitalWrite(step1dir, 0);
+  }
+
+  if(step2ang>currentAngle2){
+    digitalWrite(step2dir, 1);
+  }
+  else{
+    digitalWrite(step2dir, 0);
+  }
+
+  while(currentAngle1 + angleRange < step1ang < currentAngle1 - angleRange && currentAngle2 + angleRange < step2ang < currentAngle2 - angleRange){
+
+    if(currentAngle1 + angleRange < step1ang < currentAngle1 - angleRange){
+    digitalWrite(step1step, 1);
+    delayMicroseconds(stepperDelay);
+    digitalWrite(step1step, 0);
+    delayMicroseconds(stepperDelay);
+
+      if (step1dir){
+        currentAngle1 += 360/stepsPerRev;
+      }
+      else{
+        currentAngle1 -= 360/stepsPerRev;
+      }
+    }
+
+    if(currentAngle2 + angleRange < step2ang < currentAngle2 - angleRange){
+    digitalWrite(step2step, 1);
+    delayMicroseconds(stepperDelay);
+    digitalWrite(step2step, 0);
+    delayMicroseconds(stepperDelay);
+
+      if (step2dir){
+        currentAngle2 += 360/stepsPerRev;
+      }
+      else{
+        currentAngle2 -= 360/stepsPerRev;
+      }
+    }
+  }
+}
+
 
 void getControllerValues() {
 
@@ -162,7 +235,7 @@ void getControllerValues() {
   ButtonLeft3 = PS3.getButtonPress(L3);
   ButtonRight3 = PS3.getButtonPress(R3);
 
-  ButtonSelect = PS3.getButtonPress(SELECT);
+  ButtonSelect = PS3.getButtonClick(SELECT);
   ButtonStart = PS3.getButtonClick(START);
   ButtonHome = PS3.getButtonPress(HOME);
 
