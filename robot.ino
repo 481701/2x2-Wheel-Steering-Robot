@@ -7,10 +7,11 @@ BTD Btd(&Usb); //aanmaken bluetooth object
 //PS3BT PS3(&Btd); //aanmaken PS3BT object
 PS3BT PS3(&Btd, 0x00, 0x15, 0x83, 0x3D, 0x0A, 0x57); //aanmaken PS3BT object met address
 
-#define step1dir x
-#define step1step x
-#define step2dir x
-#define step2step x
+//nog invullen
+#define step1dir 1
+#define step1step 1
+#define step2dir 1
+#define step2step 1
 
 #define angleRange 1
 #define stepsPerRev 200
@@ -65,7 +66,7 @@ void setup() {
 
   pinMode(demo_knop, INPUT);
   pinMode(step1dir, OUTPUT);
-  pinMode(step1step, OUTPUT;
+  pinMode(step1step, OUTPUT);
   pinMode(step2dir, OUTPUT);
   pinMode(step2step, OUTPUT);
 
@@ -158,20 +159,20 @@ void PowerControl(int esc1, int esc2) {
 void SteeringControl(int step1ang, int step2ang) {
 
   if(step1ang>currentAngle1){
-    step1dir = 1;
+    digitalWrite(step1dir, 1);
   }
   else{
-    step1dir = 0;
+    digitalWrite(step1dir, 0);
   }
 
   if(step2ang>currentAngle2){
-    step2dir = 1;
+    digitalWrite(step2dir, 1);
   }
   else{
-    step2dir = 0;
+    digitalWrite(step2dir, 0);
   }
 
-  while(currentAngle1 + angleRange < step1ang < currentAngle1 - angleRange && currentAngle2 + angleRange < step2ang < currentAngle2 - angleRange)
+  while(currentAngle1 + angleRange < step1ang < currentAngle1 - angleRange && currentAngle2 + angleRange < step2ang < currentAngle2 - angleRange){
 
     if(currentAngle1 + angleRange < step1ang < currentAngle1 - angleRange){
     digitalWrite(step1step, 1);
@@ -179,11 +180,12 @@ void SteeringControl(int step1ang, int step2ang) {
     digitalWrite(step1step, 0);
     delayMicroseconds(stepperDelay);
 
-    if (step1dir){
-      currentAngle1 += 360/stepsPerRev;
-    }
-    else{
-      currentAngle1 -= 360/stepsPerRev;
+      if (step1dir){
+        currentAngle1 += 360/stepsPerRev;
+      }
+      else{
+        currentAngle1 -= 360/stepsPerRev;
+      }
     }
 
     if(currentAngle2 + angleRange < step2ang < currentAngle2 - angleRange){
@@ -192,14 +194,14 @@ void SteeringControl(int step1ang, int step2ang) {
     digitalWrite(step2step, 0);
     delayMicroseconds(stepperDelay);
 
-    if (step2dir){
-      currentAngle2 += 360/stepsPerRev;
+      if (step2dir){
+        currentAngle2 += 360/stepsPerRev;
+      }
+      else{
+        currentAngle2 -= 360/stepsPerRev;
+      }
     }
-    else{
-      currentAngle2 -= 360/stepsPerRev;
-    }
-
-
+  }
 }
 
 
