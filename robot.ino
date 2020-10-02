@@ -156,7 +156,7 @@ void PowerControl(int esc1, int esc2) {
   Vesc2.writeMicroseconds(map(esc2, 0, 255, 1000, 2000));
 }
 
-void SteeringControl(int step1ang, int step2ang) {
+
 void SteeringControl(int step1ang, int step2ang) {
 
   while (currentAngle1 + angleRange < step1ang || step1ang < currentAngle1 - angleRange || currentAngle2 + angleRange < step2ang || step2ang < currentAngle2 - angleRange) {
