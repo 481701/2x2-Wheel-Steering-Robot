@@ -87,45 +87,52 @@ void setup() {
 
 
 void loop() {
-  if(GetBattery > 5) {
-    Usb.Task(); //checkt usb device voor updates
-      
-      while (!PS3.PS3Connected) { //zolang dat de controller niet verbonden is / de verbinding verloren is
-        Usb.Task();
-    
-        if (first) {
-          Serial.println("Controller disconnected");
-          first = 0;
-        }
-    
-        //motorsnelheden op 0
-    
-        if (PS3.PS3Connected) {
-          PS3.setRumbleOn(10, 1, 10, 1);
-          delay(500);
-          PS3.setRumbleOn(10, 1, 10, 1);
-    
-    
-          setLeds(1, 1, 1, 1);
-          Serial.println("Controller connected");
-          first = 1;
-        }
-      }
-      if (ButtonStart) {
-        PS3.disconnect();
-      }
-      if(digitalRead(demo_knop) == LOW || buttonSelect) {
-        Serial.println("Demo knop ingedrukt");
-        DemoShow();
-      }
+  Usb.Task(); //checkt usb device voor updates
 
-    getControllerValues();
-    PowerControl(TriggerRight2, TriggerRight2);
-  //printControllerValues();
-  //hier iets doen met de controllervalues
-  } else {
-    Serial.println("Batterij niveau lager dan 5 procent!");
+  //DISCONNECTED
+  while (!PS3.PS3Connected) { //zolang dat de controller niet verbonden is / de verbinding verloren is
+    Usb.Task();
+
+    if (first) {
+      Serial.println("Controller disconnected");
+      first = 0;
+      
+      //*****
+      //HIER MOTORSNELHEDEN OP 0 ZETTEN
+      //*****
+      
+    }
+    if (PS3.PS3Connected) {
+      PS3.setRumbleOn(10, 1, 10, 1);
+      delay(500);
+      PS3.setRumbleOn(10, 1, 10, 1);
+
+
+      setLeds(1, 1, 1, 1);
+      Serial.println("Controller connected");
+      first = 1;
+    }
+
   }
+  //END DISCONNECTED
+
+  if (ButtonStart) {
+    PS3.disconnect();
+  }
+  
+  //if (digitalRead(demo_knop) == LOW || ButtonSelect) {
+  //Serial.println("Demo knop ingedrukt");
+  //DemoShow();
+  //}
+
+  
+  getControllerValues(); //deze leest alle controller values uit
+  //printControllerValues(); //deze gebruiken om de controller te testen
+  
+  
+  //hier iets doen met de controllervalues
+
+
 }
 
 
