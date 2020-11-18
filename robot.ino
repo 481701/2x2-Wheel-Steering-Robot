@@ -97,9 +97,7 @@ void loop() {
       Serial.println("Controller disconnected");
       first = 0;
       
-      //*****
-      //HIER MOTORSNELHEDEN OP 0
-      //*****
+      PowerControl(0, 0);
       
     }
     if (PS3.PS3Connected) {
