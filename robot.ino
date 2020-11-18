@@ -98,7 +98,7 @@ void loop() {
       first = 0;
       
       //*****
-      //HIER MOTORSNELHEDEN OP 0 ZETTEN
+      //HIER MOTORSNELHEDEN OP 0
       //*****
       
     }
